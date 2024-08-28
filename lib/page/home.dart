@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, unused_element
-
 import 'package:exercise_management/page/add_workout.dart';
 import 'package:exercise_management/page/workout_history.dart';
 import 'package:exercise_management/widget/drawer_widget.dart';
@@ -51,19 +49,49 @@ class _WorkoutTrackerHomeState extends State<WorkoutTrackerHome> {
 
   void _addWorkout(Map<String, dynamic> workout) {
     setState(() {
-      _workouts.add(workout);
+      final totalDurationInSeconds = workout['duration'];
+      final hours = totalDurationInSeconds ~/ 3600;
+      final minutes = (totalDurationInSeconds % 3600) ~/ 60;
+      final seconds = totalDurationInSeconds % 60;
+
+      _workouts.add({
+        'name': workout['name'],
+        'hours': hours,
+        'minutes': minutes,
+        'seconds': seconds,
+        'repetitions': workout['repetitions'],
+      });
       _saveWorkouts();
     });
   }
 
   void _editWorkout(int index, Map<String, dynamic> updatedWorkout) {
     setState(() {
+      final totalDurationInSeconds = updatedWorkout['duration'];
+      final hours = totalDurationInSeconds ~/ 3600;
+      final minutes = (totalDurationInSeconds % 3600) ~/ 60;
+      final seconds = totalDurationInSeconds % 60;
+
       _workoutHistory.add({
         'old': _workouts[index],
-        'new': updatedWorkout,
+        'new': {
+          'name': updatedWorkout['name'],
+          'hours': hours,
+          'minutes': minutes,
+          'seconds': seconds,
+          'repetitions': updatedWorkout['repetitions'],
+        },
         'timestamp': DateTime.now().toIso8601String(),
       });
-      _workouts[index] = updatedWorkout;
+
+      _workouts[index] = {
+        'name': updatedWorkout['name'],
+        'hours': hours,
+        'minutes': minutes,
+        'seconds': seconds,
+        'repetitions': updatedWorkout['repetitions'],
+      };
+
       _saveWorkouts();
     });
   }
@@ -131,6 +159,25 @@ class _WorkoutTrackerHomeState extends State<WorkoutTrackerHome> {
     });
   }
 
+  String _formatDuration(int hours, int minutes, int seconds) {
+    String formattedDuration = '';
+
+    if (hours > 0) {
+      formattedDuration += '$hoursس ';
+    }
+
+    if (minutes > 0) {
+      formattedDuration += '$minutesد ';
+    }
+
+    // دائماً عرض الثواني إذا لم يكن هناك شيء آخر معروض
+    if (seconds > 0 || formattedDuration.isEmpty) {
+      formattedDuration += '$secondsث ';
+    }
+
+    return formattedDuration.trim(); // لإزالة أي مسافات زائدة
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,6 +211,11 @@ class _WorkoutTrackerHomeState extends State<WorkoutTrackerHome> {
           : ListView.builder(
               itemCount: _workouts.length,
               itemBuilder: (ctx, index) {
+                final workout = _workouts[index];
+                final hours = workout['hours'] ?? 0;
+                final minutes = workout['minutes'] ?? 0;
+                final seconds = workout['seconds'] ?? 0;
+
                 return Card(
                   elevation: 4,
                   margin:
@@ -172,17 +224,19 @@ class _WorkoutTrackerHomeState extends State<WorkoutTrackerHome> {
                     leading: CircleAvatar(
                       backgroundColor: Colors.teal,
                       foregroundColor: Colors.white,
-                      child: Text('${_workouts[index]['duration']}m'),
+                      child: Text(
+                        _formatDuration(hours, minutes, seconds),
+                      ),
                     ),
                     title: Text(
-                      _workouts[index]['name'],
+                      workout['name'],
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     subtitle: Text(
-                      'المدة: ${_workouts[index]['duration']} دقيقة\nالتكرارات: ${_workouts[index]['repetitions']}',
+                      'المدة: ${_formatDuration(hours, minutes, seconds)}\nالتكرارات: ${workout['repetitions']}',
                       style: const TextStyle(fontSize: 16),
                     ),
                     trailing: Row(

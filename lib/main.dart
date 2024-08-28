@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [
+      supportedLocales: [ 
         Locale('ar', 'AE'),
       ],
       debugShowCheckedModeBanner: false,
@@ -27,3 +27,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+  

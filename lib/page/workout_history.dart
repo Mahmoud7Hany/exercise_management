@@ -1,5 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -26,6 +24,14 @@ class _WorkoutHistoryState extends State<WorkoutHistory> {
   String _formatDate(String timestamp) {
     final dateTime = DateTime.parse(timestamp);
     return DateFormat('dd/MM/yyyy').format(dateTime);
+  }
+
+  String _formatDuration(int hours, int minutes, int seconds) {
+    String formattedHours = hours > 0 ? '$hours:' : '';
+    String formattedMinutes = minutes.toString().padLeft(2, '0');
+    String formattedSeconds = seconds.toString().padLeft(2, '0');
+
+    return '$formattedHours$formattedMinutes:$formattedSeconds';
   }
 
   @override
@@ -66,6 +72,18 @@ class _WorkoutHistoryState extends State<WorkoutHistory> {
                 final newWorkout = widget.history[index]['new'];
                 final timestamp = widget.history[index]['timestamp'];
 
+                final oldDuration = oldWorkout['duration'] ?? 0;
+                final newDuration = newWorkout['duration'] ?? 0;
+
+                // تحويل المدة من دقائق إلى ساعات ودقائق وثواني
+                int oldHours = oldDuration ~/ 60;
+                int oldMinutes = oldDuration % 60;
+                int oldSeconds = 0; // إذا كنت تحتاج الثواني، أضف حسابها هنا
+
+                int newHours = newDuration ~/ 60;
+                int newMinutes = newDuration % 60;
+                int newSeconds = 0; // إذا كنت تحتاج الثواني، أضف حسابها هنا
+
                 return Card(
                   elevation: 4,
                   margin:
@@ -98,7 +116,7 @@ class _WorkoutHistoryState extends State<WorkoutHistory> {
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         Text('الاسم: ${oldWorkout['name']}'),
-                        Text('المدة: ${oldWorkout['duration']} دقيقة'),
+                        Text('المدة: ${_formatDuration(oldHours, oldMinutes, oldSeconds)}'),
                         Text('التكرارات: ${oldWorkout['repetitions']}'),
                         const SizedBox(height: 10),
                         const Text(
@@ -107,7 +125,7 @@ class _WorkoutHistoryState extends State<WorkoutHistory> {
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         Text('الاسم: ${newWorkout['name']}'),
-                        Text('المدة: ${newWorkout['duration']} دقيقة'),
+                        Text('المدة: ${_formatDuration(newHours, newMinutes, newSeconds)}'),
                         Text('التكرارات: ${newWorkout['repetitions']}'),
                       ],
                     ),

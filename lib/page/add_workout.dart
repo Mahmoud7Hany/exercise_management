@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 
 // إضافة تمرين
@@ -15,7 +13,9 @@ class AddWorkout extends StatefulWidget {
 class _AddWorkoutState extends State<AddWorkout> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
-  int? _duration;
+  int? _hours;
+  int? _minutes;
+  int? _seconds;
   int? _repetitions;
 
   @override
@@ -23,7 +23,10 @@ class _AddWorkoutState extends State<AddWorkout> {
     super.initState();
     if (widget.workout != null) {
       _name = widget.workout!['name'];
-      _duration = widget.workout!['duration'];
+      final totalSeconds = widget.workout!['duration'] ?? 0;
+      _hours = totalSeconds ~/ 3600;
+      _minutes = (totalSeconds % 3600) ~/ 60;
+      _seconds = totalSeconds % 60;
       _repetitions = widget.workout!['repetitions'];
     }
   }
@@ -31,9 +34,11 @@ class _AddWorkoutState extends State<AddWorkout> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      final durationInSeconds =
+          (_hours ?? 0) * 3600 + (_minutes ?? 0) * 60 + (_seconds ?? 0);
       Navigator.of(context).pop({
         'name': _name,
-        'duration': _duration ?? 0,
+        'duration': durationInSeconds,
         'repetitions': _repetitions ?? 0,
       });
     }
@@ -82,28 +87,72 @@ class _AddWorkoutState extends State<AddWorkout> {
                 },
               ),
               const SizedBox(height: 10),
-              TextFormField(
-                initialValue:
-                    widget.workout != null ? _duration.toString() : '',
-                decoration: const InputDecoration(
-                  labelText: 'المدة (بالدقائق)',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'الرجاء إدخال المدة';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _duration = int.tryParse(value!);
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _hours?.toString() ?? '',
+                      decoration: const InputDecoration(
+                        labelText: 'الساعات',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'الرجاء إدخال الساعات';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _hours = int.tryParse(value!);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _minutes?.toString() ?? '',
+                      decoration: const InputDecoration(
+                        labelText: 'الدقائق',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'الرجاء إدخال الدقائق';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _minutes = int.tryParse(value!);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _seconds?.toString() ?? '',
+                      decoration: const InputDecoration(
+                        labelText: 'الثواني',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'الرجاء إدخال الثواني';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _seconds = int.tryParse(value!);
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               TextFormField(
-                initialValue:
-                    widget.workout != null ? _repetitions.toString() : '',
+                initialValue: _repetitions?.toString() ?? '',
                 decoration: const InputDecoration(
                   labelText: 'عدد التكرارات',
                   border: OutlineInputBorder(),
