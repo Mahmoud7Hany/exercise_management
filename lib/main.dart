@@ -19,12 +19,11 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [ 
+      supportedLocales: [
         Locale('ar', 'AE'),
       ],
       debugShowCheckedModeBanner: false,
-      home: WorkoutTrackerHome(),
+      home: HomePage(),
     );
   }
 }
-  

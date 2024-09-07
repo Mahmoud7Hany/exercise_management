@@ -101,14 +101,12 @@ class _TimerPageState extends State<TimerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.transparent,
         title: const Text(
           'المؤقت',
           style: TextStyle(
-            color: Colors.white,
-          ),
+              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        centerTitle: true,
       ),
       body: Center(
         child: Column(
